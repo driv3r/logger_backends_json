@@ -6,6 +6,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [0.1.0] - 2016-11-15
 ### Added
-
 - base json backend implementation

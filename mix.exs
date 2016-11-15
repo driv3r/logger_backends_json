@@ -5,6 +5,8 @@ defmodule Logger.Backends.JSON.Mixfile do
     [app: :logger_backends_json,
      version: "0.1.0",
      elixir: "~> 1.3",
+     description: description(),
+     package: package(),
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps()]
@@ -31,6 +33,22 @@ defmodule Logger.Backends.JSON.Mixfile do
       {:poison, "~> 3.0", only: :test},
       {:json, "~> 1.0", only: :test},
       {:exjsx, "~> 3.2.1", only: :test},
+    ]
+  end
+
+  defp description do
+    """
+    Yet another (but flexible) JSON backend for Logger. Pick whatever json encoder you want (poison, json, exjsx) or provide your own.
+    """
+  end
+
+  defp package do
+    [
+      name: :logger_backends_json,
+      files: ["lib", "mix.exs", "README.md", "LICENSE.md", "CHANGELOG.md"],
+      maintainers: ["Leszek Zalewski"],
+      licenses: ["MIT"],
+      links: %{"GitHub" => "https://github.com/driv3r/logger_backends_json"}
     ]
   end
 end
