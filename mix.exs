@@ -33,6 +33,7 @@ defmodule Logger.Backends.JSON.Mixfile do
       {:poison, "~> 3.0", only: :test},
       {:json, "~> 1.0", only: :test},
       {:exjsx, "~> 3.2.1", only: :test},
+      {:ex_doc, ">= 0.0.0", only: :dev}
     ]
   end
 
