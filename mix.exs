@@ -27,6 +27,10 @@ defmodule Logger.Backends.JSON.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [
+      {:poison, "~> 3.0", only: :test},
+      {:json, "~> 1.0", only: :test},
+      {:exjsx, "~> 3.2.1", only: :test},
+    ]
   end
 end

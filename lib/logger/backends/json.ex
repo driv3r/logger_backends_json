@@ -1,2 +1,82 @@
 defmodule Logger.Backends.JSON do
+  use GenEvent
+
+  defstruct [name: :json, level: :info, metadata: [], encoder: Logger.Backends.JSON.DummyEncoder]
+
+  def init({__MODULE__, name}) do
+    {:ok, configure(name, [], %__MODULE__{})}
+  end
+
+
+  def handle_call({:configure, options}, state) do
+    {:ok, :ok, configure(state.name, options, state)}
+  end
+
+  def handle_event({_level, gl, _event}, state) when node(gl) != node() do
+    {:ok, state}
+  end
+
+  def handle_event({level, gl, {Logger, msg, ts, md}}, %{level: min_level} = state) do
+    if is_nil(min_level) or Logger.compare_levels(level, min_level) != :lt do
+      IO.puts gl, event(level, msg, ts, md, state)
+    end
+
+    {:ok, state}
+  end
+
+  def handle_event(_, state) do
+    {:ok, state}
+  end
+
+  def handle_info(_, state) do
+    {:ok, state}
+  end
+
+  ### Helpers
+
+  defp configure(name, options, state) do
+    config =
+      Application.get_env(:logger, name, [])
+      |> Keyword.merge(options)
+
+    encoder  = get_config config, :encoder, Logger.Backends.JSON.DummyEncoder
+    level    = get_config config, :level, :info
+    metadata = get_config(config, :metadata, %{}) |> normalize_metadata
+
+    %{state | name: name, level: level, encoder: encoder, metadata: metadata}
+  end
+
+  defp get_config(config, key, default) do
+    config
+    |> Keyword.get(key, default)
+    |> fetch
+  end
+
+  defp fetch(funk) when is_function(funk) do
+    funk.()
+  end
+
+  defp fetch(val), do: val
+
+  defp normalize_metadata(md) when is_map(md), do: md
+  defp normalize_metadata(md) when is_list(md), do: Enum.into(md, %{})
+  defp normalize_metadata(md), do: %{metadata: inspect(md)}
+
+  defp normalize_timestamp({date, {h, min, sec, ms}}) do
+    {date, {h, min, sec}}
+    |> NaiveDateTime.from_erl!({ms * 1000, 6})
+    |> NaiveDateTime.to_iso8601
+  end
+
+  defp event(lvl, txt, timestamp, metadata, %{metadata: extras, encoder: encoder}) do
+    message =
+      %{msg: txt, level: lvl}
+      |> Map.put(:timestamp, normalize_timestamp(timestamp))
+      |> Map.merge(extras)
+      |> Map.merge(Enum.into(metadata, %{}))
+      |> Map.put(:pid, metadata[:pid] |> inspect)
+
+    {:ok, json} = encoder.encode(message)
+    json
+  end
 end
