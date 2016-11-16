@@ -1,4 +1,4 @@
-# Logger Backends JSON
+# Logger Backends JSON [![Build Status](https://travis-ci.org/driv3r/logger_backends_json.svg?branch=master)](https://travis-ci.org/driv3r/logger_backends_json)
 
 Yet another (but flexible) JSON backend for Logger. Pick whatever json encoder you want (poison, json, exjsx) or provide your own.
 
