@@ -1,6 +1,14 @@
 # Logger Backends JSON
 
-Flexible JSON backend for Elixir Logger
+Yet another (but flexible) JSON backend for Logger. Pick whatever json encoder you want (poison, json, exjsx) or provide your own.
+
+## Roadmap
+
+- [x] Basic functionallity, dumb IO usage, configuration and using given parsing lib.
+- [ ] Improve documentation on hex docs.
+- [ ] Buffered & async sending messages to IO `[:user](http://ferd.ca/repl-a-bit-more-and-less-than-that.html)` process.
+- [ ] Filtering of messages via configured function in addition to log levels.
+- [ ] Adding examples of custom json encoders.
 
 ## Installation
 
