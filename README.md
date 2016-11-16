@@ -19,38 +19,35 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 
     ```elixir
     def deps do
-      [{:logger_backends_json, "~> 0.1.0"}]
+      [
+        # your json library of choice, otherwise you will need to provide custom module.
+        {:poison, "~> 3.0"},
+        {:logger_backends_json, "~> 0.1.0"}
+      ]
     end
     ```
 
-  2. Ensure `logger_backends_json` is started before your application:
+  2. Update your config
 
     ```elixir
-    def application do
-      [applications: [:logger_backends_json]]
-    end
+    # A tuple with module and config name to use
+    config :logger, backends: [{Logger.Backends.JSON, :json}]
+
+    config :logger, :json,
+      level: :info,
+      metadata: %{foo: "bar"},
+      encoder: Poison
     ```
 
-## Configuration
-
-```elixir
-# A tuple with module and config name to use
-config :logger, backends: [{Logger.Backends.JSON, :json}]
-
-config :logger, :json,
-  level: :info,
-  metadata: %{application: "YourApp", env: "staging"},
-  encoder: Poison
-```
-
-Or a bit more dynamic like
+## Extra configuration
 
 ```elixir
 config :logger, :json,
   level: fn() ->
-    System.get_env("LOG_LEVEL") || "info"
+    (System.get_env("LOG_LEVEL") || "info") |> String.to_atom
   end,
-  metadata: fn() -> [
+  metadata: fn() ->
+    [
       application: System.get_env("MY_APP_NAME"),
       env: System.get_env("APP_ENV")
     ]
@@ -67,6 +64,20 @@ All possible options:
 In any case you can also specify a function that will get evaluated on initialization.
 
 If you need to pass any extra info on each log, i.e. some stuff from ETS tables or whatever, you can do it by creating custom encoder and adding it there.
+
+## Frequent issues
+
+  1. This backend doesn't install any dependencies - it doesn't come with any default JSON encoder - so when you try to assign `Poison` as encoder, but you didn't installed it you will get a message like
+
+    ```elixir
+    iex(1)>
+    =INFO REPORT==== 16-Nov-2016::09:57:32 ===
+        application: logger
+        exited: shutdown
+        type: temporary
+    ```
+
+    to solve it just install `:poison` (or any other json lib) by following their installation instructions, and everything should be back to good.
 
 ## Sources & inspiration
 
