@@ -6,7 +6,7 @@ Yet another (but flexible) JSON backend for Logger. Pick whatever json encoder y
 
 - [x] Basic functionallity, dumb IO usage, configuration and using given parsing lib.
 - [ ] Improve documentation on hex docs.
-- [ ] Buffered & async sending messages to IO `[:user](http://ferd.ca/repl-a-bit-more-and-less-than-that.html)` process.
+- [ ] Buffered & async sending messages to IO `:user` process.
 - [ ] Filtering of messages via configured function in addition to log levels.
 - [ ] Adding examples of custom json encoders.
 
@@ -66,3 +66,10 @@ All possible options:
 In any case you can also specify a function that will get evaluated on initialization.
 
 If you need to pass any extra info on each log, i.e. some stuff from ETS tables or whatever, you can do it by creating custom encoder and adding it there.
+
+## Sources & inspiration
+
+- [user process](http://ferd.ca/repl-a-bit-more-and-less-than-that.html) Erl shell workings and what is user process.
+- [elixir#4720](https://github.com/elixir-lang/elixir/pull/4720) performance via calling user process directly.
+- [elixir#4728](https://github.com/elixir-lang/elixir/pull/4728) performance via buffering IO and sending stuff async.
+- various json loggers (i.e. `json_logger` and `logger_logstash_backend`)
