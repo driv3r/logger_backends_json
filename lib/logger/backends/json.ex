@@ -18,7 +18,7 @@ defmodule Logger.Backends.JSON do
 
   def handle_event({level, gl, {Logger, msg, ts, md}}, %{level: min_level} = state) do
     if is_nil(min_level) or Logger.compare_levels(level, min_level) != :lt do
-      IO.puts gl, event(level, msg, ts, md, state)
+      IO.puts gl, event(level, normalize_message(msg), ts, md, state)
     end
 
     {:ok, state}
@@ -67,6 +67,10 @@ defmodule Logger.Backends.JSON do
     |> NaiveDateTime.from_erl!({ms * 1000, 6})
     |> NaiveDateTime.to_iso8601
   end
+
+  defp normalize_message(txt) when is_list(txt), do: inspect(txt)
+  defp normalize_message(txt) when is_bitstring(txt), do: txt
+  defp normalize_message(_), do: "unsupported message type"
 
   defp event(lvl, txt, timestamp, metadata, %{metadata: extras, encoder: encoder}) do
     message =

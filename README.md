@@ -5,6 +5,7 @@ Yet another (but flexible) JSON backend for Logger. Pick whatever json encoder y
 ## Roadmap
 
 - [x] Basic functionallity, dumb IO usage, configuration and using given parsing lib.
+- [ ] Proper formatting of error messages taken from `error_logger` which come in as lists
 - [ ] Improve documentation on hex docs.
 - [ ] Buffered & async sending messages to IO `:user` process.
 - [ ] Filtering of messages via configured function in addition to log levels.
