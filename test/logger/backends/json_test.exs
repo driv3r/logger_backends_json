@@ -103,6 +103,45 @@ defmodule Logger.Backends.JSONTest do
     Logger.configure_backend @backend, metadata: nil, encoder: @dummy
   end
 
+  test "logger sasl reports" do
+    Logger.App.stop
+    Application.put_env :logger, :handle_sasl_reports, true
+    Application.put_env :logger, :test_logger_backends_json, level: :debug, encoder: Poison
+
+    [msg | rest] =
+      capture_log(fn ->
+        Logger.App.start;
+        :proc_lib.spawn fn -> raise RuntimeError, "Oops" end
+        :timer.sleep 150
+      end)
+      |> String.split("\n")
+      |> Enum.filter(fn(m) -> String.length(m) > 0 end)
+      |> Enum.map(fn(m) ->
+        {:ok, msg} = m |> String.trim |> Poison.decode
+        msg
+      end)
+
+    assert msg["error_logger"] == "progress"
+    assert msg["level"] == "info"
+    assert msg["msg"] =~ "[\"Child \", \"Logger.ErrorHandler\", \" of Supervisor \", \"Logger.Supervisor\", \" started\""
+
+    [msg | rest] = rest
+
+    assert msg["error_logger"] == "progress"
+    assert msg["level"] == "info"
+    assert msg["msg"] =~ "[\"Application \", \"logger\", \" started at \""
+
+    [msg] = rest
+
+    assert msg["error_logger"] == "crash_report"
+    assert msg["level"] == "error"
+    assert msg["msg"] =~ "** (RuntimeError) Oops"
+  after
+    Logger.App.stop
+    Application.put_env :logger, :handle_sasl_reports, false
+    Application.put_env :logger, :test_logger_backends_json, level: :info, encoder: Logger.Backends.JSON.DummyEncoder
+    Logger.App.start
+  end
 
   defp capture_log(fun) do
     capture_io(:user, fn ->
