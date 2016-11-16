@@ -105,7 +105,7 @@ defmodule Logger.Backends.JSONTest do
 
 
   defp capture_log(fun) do
-    capture_io(:stdio, fn ->
+    capture_io(:user, fn ->
       fun.()
       Logger.flush()
     end)

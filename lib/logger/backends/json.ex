@@ -18,7 +18,7 @@ defmodule Logger.Backends.JSON do
 
   def handle_event({level, gl, {Logger, msg, ts, md}}, %{level: min_level} = state) do
     if is_nil(min_level) or Logger.compare_levels(level, min_level) != :lt do
-      IO.puts gl, event(level, normalize_message(msg), ts, md, state)
+      IO.puts :user, event(level, normalize_message(msg), ts, md, state)
     end
 
     {:ok, state}
