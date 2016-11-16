@@ -9,6 +9,7 @@ Yet another (but flexible) JSON backend for Logger. Pick whatever json encoder y
 - [ ] Buffered & async sending messages to IO `:user` process.
 - [ ] Filtering of messages via configured function in addition to log levels.
 - [ ] Adding examples of custom json encoders.
+- [ ] Additional switchable IO backends, i.e. TCP, UDP, File
 
 ## Installation
 
