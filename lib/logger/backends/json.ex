@@ -52,12 +52,6 @@ defmodule Logger.Backends.JSON do
     |> ConfigExt.load!
   end
 
-  defp fetch(funk) when is_function(funk) do
-    funk.()
-  end
-
-  defp fetch(val), do: val
-
   defp normalize_metadata(md) when is_map(md), do: md
   defp normalize_metadata(md) when is_list(md), do: Enum.into(md, %{})
   defp normalize_metadata(md), do: %{metadata: inspect(md)}
