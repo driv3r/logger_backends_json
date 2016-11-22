@@ -14,7 +14,7 @@ Yet another (but flexible) JSON backend for Logger. Pick whatever json encoder y
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
+The package can be installed as:
 
   1. Add `logger_backends_json` to your list of dependencies in `mix.exs`:
 
@@ -23,7 +23,7 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
       [
         # your json library of choice, otherwise you will need to provide custom module.
         {:poison, "~> 3.0"},
-        {:logger_backends_json, "~> 0.1.0"}
+        {:logger_backends_json, "~> 0.2.0"}
       ]
     end
     ```
@@ -42,17 +42,18 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 
 ## Extra configuration
 
+This library uses [`ConfigExt`](https://github.com/driv3r/config_ext) for loading dynamic configuration, like environment variables or functions on runtime.
+
 ```elixir
+defmodule Foo do
+  def bar(baz), do: %{bar: inspect(baz), env: System.get_env("APP_ENV")}
+end
+
+System.put_env "LOG_LEVEL", "debug"
+
 config :logger, :json,
-  level: fn() ->
-    (System.get_env("LOG_LEVEL") || "info") |> String.to_atom
-  end,
-  metadata: fn() ->
-    [
-      application: System.get_env("MY_APP_NAME"),
-      env: System.get_env("APP_ENV")
-    ]
-  end,
+  level: {:system, "LOG_LEVEL", :info},
+  metadata: {:function, Foo, :bar, [:baz]},
   encoder: Poison
 ```
 
@@ -62,7 +63,7 @@ All possible options:
 - `level` represents log level, same as in default `Logger` - `debug, info, warn, error`.
 - `metadata` additional info to pass into json, should be `Map` in the end.
 
-In any case you can also specify a function that will get evaluated on initialization.
+In any case you can also specify a function that will get evaluated on initialization, if you need to update it during runtime - just run `Logger.configure_backend(...)`.
 
 If you need to pass any extra info on each log, i.e. some stuff from ETS tables or whatever, you can do it by creating custom encoder and adding it there.
 

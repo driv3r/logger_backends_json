@@ -1,5 +1,5 @@
 defmodule Logger.Backends.JSONTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: false
   import ExUnit.CaptureIO
   require Logger
   require Poison
@@ -83,11 +83,15 @@ defmodule Logger.Backends.JSONTest do
     Logger.configure_backend @backend, metadata: nil, encoder: @dummy
   end
 
+  def metadata, do: %{bar: :baz}
+  def encoder, do: Poison
+  def level, do: :debug
+
   test "dynamic config" do
     Logger.configure_backend @backend,
-      metadata: fn -> %{bar: :baz} end,
-      encoder:  fn -> Poison end,
-      level:    fn -> :debug end
+      metadata: {:function, Logger.Backends.JSONTest, :metadata},
+      encoder: {:function, Logger.Backends.JSONTest, :encoder},
+      level: {:function, Logger.Backends.JSONTest, :level}
 
     {:ok, msg} = capture_log(fn -> Logger.debug("foo") end) |> Poison.decode
     assert msg["bar"] == "baz"
