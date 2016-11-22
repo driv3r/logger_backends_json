@@ -23,7 +23,7 @@ The package can be installed as:
       [
         # your json library of choice, otherwise you will need to provide custom module.
         {:poison, "~> 3.0"},
-        {:logger_backends_json, "~> 0.2.0"}
+        {:logger_backends_json, "~> 0.3.0"}
       ]
     end
     ```
@@ -87,3 +87,7 @@ If you need to pass any extra info on each log, i.e. some stuff from ETS tables 
 - [elixir#4720](https://github.com/elixir-lang/elixir/pull/4720) performance via calling user process directly.
 - [elixir#4728](https://github.com/elixir-lang/elixir/pull/4728) performance via buffering IO and sending stuff async.
 - various json loggers (i.e. `json_logger` and `logger_logstash_backend`)
+
+## License
+
+This source code is released under the MIT License.
