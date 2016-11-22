@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [0.3.1] - 2016-11-22
+### Removed
+- Leftover and unused `fetch` function.
+
 ## [0.3.0] - 2016-11-22
 ### Changed
 - Use `ConfigExt` instead of custom function execution.
