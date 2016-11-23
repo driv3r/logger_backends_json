@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [0.4.0] - 2016-11-23
+### Added
+- Extracted `Event` module from logger backend.
+- Allow `event` as configuration option, you can provide custom `Event` module.
+- Allow custom filtering and building of messages.
+
 ## [0.3.2] - 2016-11-23
 ### Added
 - transform log level to atom

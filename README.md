@@ -24,7 +24,7 @@ The package can be installed as:
       [
         # your json library of choice, otherwise you will need to provide custom module.
         {:poison, "~> 3.0"},
-        {:logger_backends_json, "~> 0.3.2"}
+        {:logger_backends_json, "~> 0.4.0"}
       ]
     end
     ```
