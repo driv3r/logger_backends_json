@@ -85,7 +85,7 @@ defmodule Logger.Backends.JSONTest do
 
   def metadata, do: %{bar: :baz}
   def encoder, do: Poison
-  def level, do: :debug
+  def level, do: "debug"
 
   test "dynamic config" do
     Logger.configure_backend @backend,

@@ -34,13 +34,26 @@ defmodule Logger.Backends.JSON do
 
   ### Helpers
 
+  defp event(lvl, txt, timestamp, metadata, %{metadata: extras, encoder: encoder}) do
+    message =
+      %{msg: txt, level: lvl}
+      |> Map.put(:timestamp, normalize_timestamp(timestamp))
+      |> Map.merge(extras)
+      |> Map.merge(Enum.into(metadata, %{}))
+      |> Map.put(:pid, metadata[:pid] |> inspect)
+
+    {:ok, json} = encoder.encode(message)
+
+    json
+  end
+
   defp configure(name, options, state) do
     config =
       Application.get_env(:logger, name, [])
       |> Keyword.merge(options)
 
     encoder  = get_config config, :encoder, Logger.Backends.JSON.DummyEncoder
-    level    = get_config config, :level, :info
+    level    = get_config(config, :level, :info) |> normalize_level
     metadata = get_config(config, :metadata, %{}) |> normalize_metadata
 
     %{state | name: name, level: level, encoder: encoder, metadata: metadata}
@@ -66,15 +79,7 @@ defmodule Logger.Backends.JSON do
   defp normalize_message(txt) when is_bitstring(txt), do: txt
   defp normalize_message(_), do: "unsupported message type"
 
-  defp event(lvl, txt, timestamp, metadata, %{metadata: extras, encoder: encoder}) do
-    message =
-      %{msg: txt, level: lvl}
-      |> Map.put(:timestamp, normalize_timestamp(timestamp))
-      |> Map.merge(extras)
-      |> Map.merge(Enum.into(metadata, %{}))
-      |> Map.put(:pid, metadata[:pid] |> inspect)
-
-    {:ok, json} = encoder.encode(message)
-    json
-  end
+  defp normalize_level(lvl) when is_bitstring(lvl), do: String.to_atom(lvl)
+  defp normalize_level(lvl) when is_atom(lvl), do: lvl
+  defp normalize_level(_), do: :info
 end
