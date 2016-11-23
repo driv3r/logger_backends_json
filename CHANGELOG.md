@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [0.4.1] - 2016-11-23
+### Removed
+- Removed config_ext from included applications.
+
 ## [0.4.0] - 2016-11-23
 ### Added
 - Extracted `Event` module from logger backend.

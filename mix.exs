@@ -3,7 +3,7 @@ defmodule Logger.Backends.JSON.Mixfile do
 
   def project do
     [app: :logger_backends_json,
-     version: "0.4.0",
+     version: "0.4.1",
      elixir: "~> 1.3",
      description: description(),
      package: package(),
@@ -16,7 +16,7 @@ defmodule Logger.Backends.JSON.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger], included_applications: [:config_ext]]
+    [applications: [:logger]]
   end
 
   # Dependencies can be Hex packages:
