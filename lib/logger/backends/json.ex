@@ -1,7 +1,12 @@
 defmodule Logger.Backends.JSON do
   use GenEvent
 
-  defstruct [name: :json, level: :info, metadata: [], encoder: Logger.Backends.JSON.DummyEncoder]
+  defstruct [
+    name: :json, level: :info, metadata: %{}, encoder: Logger.Backends.JSON.DummyEncoder,
+    event: Logger.Backends.JSON.Event
+  ]
+
+  alias Logger.Backends.JSON.Event
 
   def init({__MODULE__, name}) do
     {:ok, configure(name, [], %__MODULE__{})}
@@ -16,9 +21,21 @@ defmodule Logger.Backends.JSON do
     {:ok, state}
   end
 
-  def handle_event({level, _gl, {Logger, msg, ts, md}}, %{level: min_level} = state) do
-    if is_nil(min_level) or Logger.compare_levels(level, min_level) != :lt do
-      IO.puts :user, event(level, normalize_message(msg), ts, md, state)
+  def handle_event({level, _gl, {Logger, msg, ts, ctx}}, %__MODULE__{} = state) do
+    %{level: min_level, event: event, metadata: metadata} = state
+
+    if enabled?(level, min_level)  do
+      message = %Event{
+        message:   msg,
+        level:     level,
+        timestamp: ts,
+        metadata:  metadata,
+        context:   ctx
+      }
+
+      if event.allow?(message) do
+        IO.puts :user, encode(message, state)
+      end
     end
 
     {:ok, state}
@@ -34,15 +51,15 @@ defmodule Logger.Backends.JSON do
 
   ### Helpers
 
-  defp event(lvl, txt, timestamp, metadata, %{metadata: extras, encoder: encoder}) do
-    message =
-      %{msg: txt, level: lvl}
-      |> Map.put(:timestamp, normalize_timestamp(timestamp))
-      |> Map.merge(extras)
-      |> Map.merge(Enum.into(metadata, %{}))
-      |> Map.put(:pid, metadata[:pid] |> inspect)
+  defp enabled?(level, min_level) do
+    Logger.compare_levels(level, min_level) != :lt
+  end
 
-    {:ok, json} = encoder.encode(message)
+  defp encode(message, %__MODULE__{encoder: encoder, event: event}) do
+    {:ok, json} =
+      message
+      |> event.build
+      |> encoder.encode
 
     json
   end
@@ -53,31 +70,22 @@ defmodule Logger.Backends.JSON do
       |> Keyword.merge(options)
 
     encoder  = get_config config, :encoder, Logger.Backends.JSON.DummyEncoder
+    event    = get_config config, :event, Event
     level    = get_config(config, :level, :info) |> normalize_level
     metadata = get_config(config, :metadata, %{}) |> normalize_metadata
 
-    %{state | name: name, level: level, encoder: encoder, metadata: metadata}
+    %{state | name: name, level: level, encoder: encoder, event: event, metadata: metadata}
   end
 
   defp get_config(config, key, default) do
     config
     |> Keyword.get(key, default)
-    |> ConfigExt.load!
+    |> ConfigExt.load!(default)
   end
 
   defp normalize_metadata(md) when is_map(md), do: md
   defp normalize_metadata(md) when is_list(md), do: Enum.into(md, %{})
   defp normalize_metadata(md), do: %{metadata: inspect(md)}
-
-  defp normalize_timestamp({date, {h, min, sec, ms}}) do
-    {date, {h, min, sec}}
-    |> NaiveDateTime.from_erl!({ms * 1000, 6})
-    |> NaiveDateTime.to_iso8601
-  end
-
-  defp normalize_message(txt) when is_list(txt), do: inspect(txt)
-  defp normalize_message(txt) when is_bitstring(txt), do: txt
-  defp normalize_message(_), do: "unsupported message type"
 
   defp normalize_level(lvl) when is_bitstring(lvl), do: String.to_atom(lvl)
   defp normalize_level(lvl) when is_atom(lvl), do: lvl

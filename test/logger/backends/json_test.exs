@@ -19,7 +19,7 @@ defmodule Logger.Backends.JSONTest do
   test "basic test" do
     assert capture_log(fn ->
       Logger.info("foo")
-    end) =~ "msg: \"foo\""
+    end) =~ "message: \"foo\""
   end
 
   test "check poison" do
@@ -127,19 +127,19 @@ defmodule Logger.Backends.JSONTest do
 
     assert msg["error_logger"] == "progress"
     assert msg["level"] == "info"
-    assert msg["msg"] =~ "[\"Child \", \"Logger.ErrorHandler\", \" of Supervisor \", \"Logger.Supervisor\", \" started\""
+    assert msg["message"] =~ "[\"Child \", \"Logger.ErrorHandler\", \" of Supervisor \", \"Logger.Supervisor\", \" started\""
 
     [msg | rest] = rest
 
     assert msg["error_logger"] == "progress"
     assert msg["level"] == "info"
-    assert msg["msg"] =~ "[\"Application \", \"logger\", \" started at \""
+    assert msg["message"] =~ "[\"Application \", \"logger\", \" started at \""
 
     [msg] = rest
 
     assert msg["error_logger"] == "crash_report"
     assert msg["level"] == "error"
-    assert msg["msg"] =~ "** (RuntimeError) Oops"
+    assert msg["message"] =~ "** (RuntimeError) Oops"
   after
     Logger.App.stop
     Application.put_env :logger, :handle_sasl_reports, false
@@ -155,7 +155,7 @@ defmodule Logger.Backends.JSONTest do
   end
 
   defp assert_correct_json({:ok, json}, line, funk) do
-    assert json["msg"] == "foo"
+    assert json["message"] == "foo"
     assert json["file"] =~ "test/logger/backends/json_test.exs"
     assert json["level"] == "info"
     assert json["function"] == "test check #{funk}/1"

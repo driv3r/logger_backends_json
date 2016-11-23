@@ -8,8 +8,9 @@ Yet another (but flexible) JSON backend for Logger. Pick whatever json encoder y
 - [ ] Proper formatting of error messages taken from `error_logger` which come in as lists
 - [ ] Improve documentation on hex docs.
 - [ ] Buffered & async sending messages to IO `:user` process.
-- [ ] Filtering of messages via configured function in addition to log levels.
+- [x] Filtering of messages via configured function in addition to log levels.
 - [ ] Adding examples of custom json encoders.
+- [x] Allowing custom message builders.
 - [ ] Additional switchable IO backends, i.e. TCP, UDP, File
 
 ## Installation
@@ -47,6 +48,11 @@ This library uses [`ConfigExt`](https://github.com/driv3r/config_ext) for loadin
 ```elixir
 defmodule Foo do
   def bar(baz), do: %{bar: inspect(baz), env: System.get_env("APP_ENV")}
+
+  alias Logger.Backends.JSON.Event
+
+  def create(%Event{} = event), do: %{text: event.message}
+  def allow?(%Event{} = event), do: event.message != "ping"
 end
 
 System.put_env "LOG_LEVEL", "debug"
@@ -54,7 +60,8 @@ System.put_env "LOG_LEVEL", "debug"
 config :logger, :json,
   level: {:system, "LOG_LEVEL", :info},
   metadata: {:function, Foo, :bar, [:baz]},
-  encoder: Poison
+  encoder: Poison,
+  event: Foo
 ```
 
 All possible options:
@@ -62,6 +69,7 @@ All possible options:
 - `encoder` anything that implements `encode(object) :: map|list => {:ok, json}`, we test against `poison`, `exjsx` and `json` libs.
 - `level` represents log level, same as in default `Logger` - `debug, info, warn, error`.
 - `metadata` additional info to pass into json, should be `Map` in the end.
+- `event` a module that implements `build(%Event{}) :: map` and `allow?(%Event{}) :: boolean` functions.
 
 In any case you can also specify a function that will get evaluated on initialization, if you need to update it during runtime - just run `Logger.configure_backend(...)`.
 
