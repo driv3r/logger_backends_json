@@ -38,7 +38,7 @@ defmodule Logger.Backends.JSON.Event do
     |> NaiveDateTime.to_iso8601
   end
 
-  defp normalize_message(txt) when is_list(txt), do: inspect(txt)
+  defp normalize_message(txt) when is_list(txt), do: to_string(txt)
   defp normalize_message(txt) when is_bitstring(txt), do: txt
   defp normalize_message(_), do: "unsupported message type"
 end

@@ -127,13 +127,13 @@ defmodule Logger.Backends.JSONTest do
 
     assert msg["error_logger"] == "progress"
     assert msg["level"] == "info"
-    assert msg["message"] =~ "[\"Child \", \"Logger.ErrorHandler\", \" of Supervisor \", \"Logger.Supervisor\", \" started\""
+    assert msg["message"] =~ "Child Logger.ErrorHandler of Supervisor Logger.Supervisor started"
 
     [msg | rest] = rest
 
     assert msg["error_logger"] == "progress"
     assert msg["level"] == "info"
-    assert msg["message"] =~ "[\"Application \", \"logger\", \" started at \""
+    assert msg["message"] =~ "Application logger started at "
 
     [msg] = rest
 
