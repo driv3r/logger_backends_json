@@ -5,7 +5,7 @@ Yet another (but flexible) JSON backend for Logger. Pick whatever json encoder y
 ## Roadmap
 
 - [x] Basic functionallity, dumb IO usage, configuration and using given parsing lib.
-- [ ] Proper formatting of error messages taken from `error_logger` which come in as lists
+- [x] Proper formatting of error messages taken from `error_logger` which come in as lists
 - [ ] Improve documentation on hex docs.
 - [ ] Buffered & async sending messages to IO `:user` process.
 - [x] Filtering of messages via configured function in addition to log levels.
@@ -24,7 +24,7 @@ The package can be installed as:
       [
         # your json library of choice, otherwise you will need to provide custom module.
         {:poison, "~> 3.0"},
-        {:logger_backends_json, "~> 0.4.1"}
+        {:logger_backends_json, "~> 0.5.0"}
       ]
     end
     ```

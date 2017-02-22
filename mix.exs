@@ -3,7 +3,7 @@ defmodule Logger.Backends.JSON.Mixfile do
 
   def project do
     [app: :logger_backends_json,
-     version: "0.4.1",
+     version: "0.5.0",
      elixir: "~> 1.3",
      description: description(),
      package: package(),

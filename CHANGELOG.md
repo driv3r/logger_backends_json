@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [0.5.0] - 2017-02-22
+- [#2 by @mbuhot] Convert erlang IOList to string with `to_string` instead of `inspect` before encoding for better visibility.
+
 ## [0.4.1] - 2016-11-23
 ### Removed
 - Removed config_ext from included applications.
